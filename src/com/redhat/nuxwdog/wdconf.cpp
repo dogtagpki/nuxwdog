@@ -29,24 +29,23 @@
 #include "wdconf.h"
 #include "wdlog.h"
 
-#define MAX_CONF_LINE_LENGTH 1024
+#define CHUNK 1024
 
 /* Read config file line like util_getline() */
-static int _watchdog_readconf_line(char *line, int maxlen, FILE *file)
+static char * _watchdog_readconf_line(FILE *file)
 {
     int len = 0;
     int nlseen = 0;
-    int src;
-    int dst;
-    char *bufp = line;
+    int src = 0;
+    int dst = 0;
+    char bufp[CHUNK];
 
-    if (feof(file)) {
-        return -1;
-    }
+    char *line = (char *) malloc(1);
+    line[0] = '\0';
 
-    while (!nlseen && (len < maxlen - 1)) {
+    while (!nlseen && !feof(file)) {
 
-        if (!fgets(bufp, maxlen - len, file))
+        if (!fgets(bufp, CHUNK, file))
             break;
 
         /* Scan what was just read */
@@ -68,26 +67,31 @@ static int _watchdog_readconf_line(char *line, int maxlen, FILE *file)
                 ++dst;
             }
         }
+        bufp[dst] = '\0';
 
         if (dst > 0) {
             /* Check for continuation */
             if (nlseen && (bufp[dst-1] == '\\')) {
+                bufp[dst-1] = '\0';
                 dst -= 1;
                 nlseen = 0;
             }
 
             len += dst;
-            bufp += dst;
+
+            line = (char *) realloc(line, len+1);
+            strcat(line, bufp);
         }
     }
                 
     if ((len <= 0) && !nlseen) {
-        return -1;
+        if (line) {
+            free(line);
+        }
+        return NULL;
     }
 
-    line[len] = '\0';
-
-    return len;
+    return line;
 }
 
 static int
@@ -95,8 +99,7 @@ _watchdog_parse_conffile(char *conffile,
                          watchdog_conf_info_t *info)
 {
     FILE *cfile;
-    char line[MAX_CONF_LINE_LENGTH];
-    char *name, *value;
+    char *line, *name, *value;
     int len;
 
     cfile = fopen(conffile, "r");
@@ -110,7 +113,8 @@ _watchdog_parse_conffile(char *conffile,
         return -1;
     }
 
-    while ((len = _watchdog_readconf_line(line, MAX_CONF_LINE_LENGTH, cfile)) >= 0) {
+    while ((line = _watchdog_readconf_line(cfile)) != NULL) {
+        len = strlen(line);
         name = line;
         if ((*name) == '#')
             continue;
@@ -154,10 +158,13 @@ _watchdog_parse_conffile(char *conffile,
         if (!strcasecmp(name, "ChildSecurity")) {
             info->childSecurity = atoi(value);
         }
+        if (line != NULL) {
+            free(line);
+            line = NULL;
+        }
     }
 
     fclose(cfile);
-
     return 0;
 }
 
