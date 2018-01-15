@@ -158,6 +158,9 @@ _watchdog_parse_conffile(char *conffile,
         if (!strcasecmp(name, "ChildSecurity")) {
             info->childSecurity = atoi(value);
         }
+        if (!strcasecmp(name, "User")) {
+            info->user = strdup(value);
+        }
         if (line != NULL) {
             free(line);
             line = NULL;
@@ -225,6 +228,10 @@ watchdog_confinfo_free(watchdog_conf_info_t *info)
 
     if (info->childPidFile) {
         free(info->childPidFile);
+    }
+
+    if (info->user) {
+        free(info->user);
     }
 
     free(info);

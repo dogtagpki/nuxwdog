@@ -36,7 +36,8 @@ typedef struct watchdog_conf_info_t {
     char            *exeContext;       /* selinux type context */
     char            *pidFile;          /* pidFile */
     char            *childPidFile;     /* child pid file */
-    int             childSecurity;     /* enforce child security */    
+    int             childSecurity;     /* enforce child security */
+    char            *user;             /* user to execute the process as */
 } watchdog_conf_info_t;
 
 watchdog_conf_info_t *watchdog_parse(char *conf_file);

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <cerrno>
 #include <signal.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -280,7 +281,7 @@ watchdog_exit(int status)
 
 int
 _watchdog_exec(int server_starts, char *server_exe, char *args[], 
-               char * envp[], int *spid)
+               char * envp[], int *spid, int uid)
 {
     int server_background = 0;
     char *server_out = NULL;
@@ -410,6 +411,14 @@ _watchdog_exec(int server_starts, char *server_exe, char *args[],
             }
 
             free(server_context);
+        }
+
+        if (uid >= 0) {
+            rv = setuid(uid);
+            if (rv != 0) {
+                watchdog_error("unable to setuid");
+                watchdog_exit(1);
+            }
         }
 
         rv = execv(server_exe, args);
@@ -757,10 +766,12 @@ int main(int argc, char **argv, char **envp)
     int ver=0;
     int server_starts;
     int server_stat;
+    int uid=-1;
     char *server_exe = NULL;
     char *server_args = NULL;
     char *conffile = NULL;
     char *pch;
+    char *user = NULL;
     char *args[100];
     struct stat statbuf;
     UDS_NAME[0]=0;
@@ -833,6 +844,11 @@ int main(int argc, char **argv, char **envp)
         watchdog_exit(1);
     }
 
+    /* user */
+    if (confinfo->user) {
+       user = strdup(confinfo->user);
+    }
+
     if (detach) {
         parent_watchdog_create_signal_handlers();
 
@@ -883,6 +899,22 @@ int main(int argc, char **argv, char **envp)
         watchdog_exit(1);
     }
 
+    if (user != NULL) {
+        struct passwd *pw = getpwnam(user);
+        if (pw == NULL) {
+            sprintf(errmsgstr, "user %s does not exist", user);
+            watchdog_error(errmsgstr);
+            watchdog_exit(1);
+        }
+
+        if (chown(UDS_NAME, pw->pw_uid, pw->pw_gid) != 0) {
+            sprintf(errmsgstr, "chown failed errno %d %s", errno, strerror(errno));
+            watchdog_error(errmsgstr);
+            watchdog_exit(1);
+        }
+        uid = pw->pw_uid;
+    }
+
     for (server_starts = 0;; ++server_starts) {
 
         _watchdog_death					= 0;
@@ -895,7 +927,7 @@ int main(int argc, char **argv, char **envp)
 
         watchdog_create_signal_handlers();
 
-        rv = _watchdog_exec(server_starts, server_exe, args, envp, &server_pid);
+        rv = _watchdog_exec(server_starts, server_exe, args, envp, &server_pid, uid);
 
         if (server_pid < 0) {
             // exec failed:  kill parent if it's still waiting
