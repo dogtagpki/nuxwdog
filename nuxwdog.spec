@@ -1,6 +1,6 @@
 Name:           nuxwdog
 Version:        1.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
@@ -133,6 +133,9 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Wed Jan 17 2018 Ade Lee <alee@redhat.com> 1.0.3-2
+- Resolves: 1534030 - add option to set process uid
+
 * Sun May 10 2015 Ade Lee <alee@redhat.com> 1.0.3-1
 - Add systemd support
 
