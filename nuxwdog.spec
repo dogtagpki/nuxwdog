@@ -15,8 +15,10 @@ BuildRequires:  nspr-devel
 BuildRequires:  nss-devel
 BuildRequires:  pkgconfig
 BuildRequires:  libselinux-devel
+BuildRequires:  perl-devel
 BuildRequires:  perl(ExtUtils::MakeMaker)
 BuildRequires:  keyutils-libs-devel
+BuildRequires:  gcc-c++
 
 Requires:       nss
 Requires:       keyutils-libs
@@ -133,71 +135,6 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
-* Wed Jan 17 2018 Ade Lee <alee@redhat.com> 1.0.4-1
-- Resolves: 1534030 - add option to set process uid
-
-* Sun May 10 2015 Ade Lee <alee@redhat.com> 1.0.3-1
-- Add systemd support
-
-* Wed Apr 22 2015 Ade Lee <alee@redhat.com> 1.0.2-1
-- Allow passwords to be retrieved post-init phase
-- Fix null termination issue on returned stored passwords
-
-* Fri Jan 28 2011 Ade Lee <alee@redhat.com> 1.0.1-1
-- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
-- fix file coloring, aliasing problem
-
-* Tue Jan 4 2011 Ade Lee <alee@redhat.com> 1.0.0-16
-- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
-- fix build problem
-
-* Tue Jan 4 2011 Ade Lee <alee@redhat.com> 1.0.0-15
-- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
-- add needed build requires, requires
-
-* Thu Dec 23 2010 Ade Lee <alee@redhat.com> 1.0.0-14
-- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
-- Remove old encryption scheme
-- Store passwords in kernel keyring
-
-* Thu Dec 16 2010 Ade Lee <alee@redhat.com> 1.0.0-13
-- Resolves: #643546 - [RFE] Add nuxwdog to RHEL.
-
-* Wed Dec 15 2010 Ade Lee <alee@redhat.com> 1.0.0-12
-- Resolves: #643546 - [RFE] Add nuxwdog to RHEL. 
-
-* Wed Dec 15 2010 Ade Lee <alee@redhat.com> 1.0.0-11
-- Exclude arches for which there is no java
-
-* Wed Dec 8 2010 Ade Lee <alee@redhat.com> 1.0.0-10
-- Fixed copyright notices
-- Removed versioning for requires
-- Fixed library reference in perl build
-
-* Tue Dec 7 2010 Ade Lee <alee@redhat.com> 1.0.0-9
-- Fixed macros and copyrights
-- Copyrights fixed for perl modules
-
-* Fri Dec 3 2010 Ade Lee <alee@redhat.com> 1.0.0-8
-- Spec file modified as per fedora review
-- Copyrights fixed for perl modules
-
-* Wed Dec 1 2010 Ade Lee <alee@redhat.com> 1.0.0-7
-- Added missing build dependency on MakeMaker
-- Removed extra config flags
-
-* Tue Nov 30 2010 Ade Lee <alee@redhat.com> 1.0.0-6
-- Restructure rpms
-- Fix rpmlint issues
-
-* Fri Sep 10 2010 Ade Lee <alee@redhat.com> 1.0.0-5
-- Bumped version to match brew builds
-- Bugzilla Bug 630115 - added printMessage() method
- 
-* Thu Feb 11 2010 Ade Lee <alee@redhat.com> 1.0.0-2
-- Initial version in separated repo.
-
-* Tue Dec 1 2009 Ade Lee <alee@redhat.com> 1.0.0-1
-- Initial open source version based upon Red Hat
-  Certificate System (RHCS) 6.1 uxwdog code.
-
+* Tue Mar 6 2018 Dogtag PKI Team <pki-devel@redhat.com> 10.6.0-0
+- To list changes in <branch> since <tag>:
+$ git log --pretty=oneline --abbrev-commit --no-decorate <tag>..<branch>
