@@ -15,8 +15,10 @@ BuildRequires:  nspr-devel
 BuildRequires:  nss-devel
 BuildRequires:  pkgconfig
 BuildRequires:  libselinux-devel
+BuildRequires:  perl-devel
 BuildRequires:  perl(ExtUtils::MakeMaker)
 BuildRequires:  keyutils-libs-devel
+BuildRequires:  gcc-c++
 
 Requires:       nss
 Requires:       keyutils-libs
@@ -133,6 +135,9 @@ rm -rf %{buildroot}
 %{_jnidir}/*
 
 %changelog
+* Mon Jul 23 2018 Dinesh Prasanth M K <dmoluguw@redhat.com> - 1.0.4-2
+- Resolves: 1605267 - add gcc-c++ and perl-devel deps for F29+
+
 * Wed Jan 17 2018 Ade Lee <alee@redhat.com> 1.0.4-1
 - Resolves: 1534030 - add option to set process uid
 
