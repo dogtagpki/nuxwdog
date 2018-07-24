@@ -1,12 +1,13 @@
 Name:           nuxwdog
 Version:        1.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
 License:        LGPLv2 and (GPL+ or Artistic)
-Group:          System Environment/Libraries
 URL:            http://www.redhat.com/certificate_system
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+# For epel5 and fc < 20 compatibility
+%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 BuildRequires:  ant
 BuildRequires:  java-devel >= 1:1.6.0
@@ -16,6 +17,7 @@ BuildRequires:  nss-devel
 BuildRequires:  pkgconfig
 BuildRequires:  libselinux-devel
 BuildRequires:  perl-devel
+BuildRequires:  perl-generators
 BuildRequires:  perl(ExtUtils::MakeMaker)
 BuildRequires:  keyutils-libs-devel
 BuildRequires:  gcc-c++
@@ -23,7 +25,6 @@ BuildRequires:  gcc-c++
 Requires:       nss
 Requires:       keyutils-libs
 Obsoletes:      nuxwdog-client
-Obsoletes:      nuxwdog-client-perl
 
 Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar.gz
 
@@ -32,7 +33,7 @@ Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar
 # this disables rpms file coloring and makes the package fail multilib tests.
 
 %if 0%{?rhel}
-ExcludeArch: ppc ppc64 s390 s390x
+ExcludeArch: ppc ppc64 ppcle ppc64le s390 s390x
 %endif
 
 %description
@@ -55,7 +56,7 @@ nuxwdog watchdog server.
 %package client-java
 Group:        System Environment/Libraries
 Summary:      Nuxwdog Watchdog client JNI Package
-Requires:     java >= 1:1.6.0
+Requires:     java-headless >= 1:1.6.0
 Requires:     jpackage-utils
 Requires:     %{name} = %{version}-%{release}
 
@@ -64,9 +65,19 @@ The nuxwdog-client-java package contains a JNI interface to the nuxwdog
 client code, so that Java clients can interact with the nuxwdog watchdog 
 server.
 
+%package client-perl
+Summary:      Nuxwdog Watchdog client perl bindings
+Requires:     perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
+Requires:     %{name} = %{version}-%{release}
+
+%description client-perl
+The nuxwdog-client-perl package contains a perl interface to nuxwdog.
 
 %prep
 %setup -q -n %{name}-%{version}
+
+sed -i \
+  -e 's,^NUXWDOGCLIENT_DOCUMENTATION=${NUXWDOGCLIENT_BUILD_PREFIX}/.*$,NUXWDOGCLIENT_DOCUMENTATION=${NUXWDOGCLIENT_BUILD_PREFIX}%{_pkgdocdir},' setup_package
 
 %build
 ant \
@@ -75,21 +86,15 @@ ant \
     -Dproduct="nuxwdog" \
     -Dversion="%{version}"
 %configure  --disable-static  \
-%ifarch ppc64 s390x sparc64 x86_64
+%if 0%{?__isa_bits} == 64
     --enable-64bit \
 %endif
-    --libdir=%{_libdir}
-make
+    --docdir=%{_pkgdocdir}
+make licensedir=%{_pkgdocdir}
 
 %install
-rm -rf %{buildroot}
-make install DESTDIR=%{buildroot} INSTALL="install -p"
-
+make install DESTDIR=%{buildroot} INSTALL="install -p" licensedir=%{_pkgdocdir}
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
-
-mkdir -p  %{buildroot}%{_docdir}
-mv %{buildroot}%{_usr}/doc %{buildroot}%{_docdir}/%{name}-%{version}
-
 find %{buildroot}/%{perl_vendorarch} -name .packlist |xargs rm -f {}
 find %{buildroot} -type f -name '*.bs' -a -size 0 -exec rm -f {} ';'
 find %{buildroot} -name "perllocal.pod" |xargs rm -f {}
@@ -102,39 +107,31 @@ mkdir -p %{buildroot}%{_jnidir}
 cd %{buildroot}/%{_jnidir}
 ln -s %{_libdir}/nuxwdog-jni/nuxwdog-%{version}.jar nuxwdog.jar
 rm -rf %{buildroot}%{_usr}/jars
-rm -rf %{buildroot}%{_usr}/doc
-rm -rf %{buildroot}%{_usr}/share/doc/nuxwdog-%{version}
 
 %post -p /sbin/ldconfig 
 
 %postun -p /sbin/ldconfig
 
-%clean
-rm -rf %{buildroot}
-
-%files 
-%defattr(-,root,root,-)
-%doc LICENSE
+%files
+%_pkgdocdir
 %{_bindir}/*
 %{_libdir}/libnuxwdog.so.*
-%{_mandir}/man3/Nuxwdogclient.3pm*
 %{_mandir}/man1/nuxwdog.1*
-%{perl_vendorarch}/*
-%exclude %dir %{perl_vendorarch}/auto/
 
 %files devel
-%defattr(-,root,root,-)
-%doc 
 %{_includedir}/nuxwdog/
 %{_libdir}/libnuxwdog.so
 
 %files client-java
-%defattr(-,root,root,-)
-%doc
 %{_libdir}/nuxwdog-jni/
 %{_jnidir}/*
 
+%files client-perl
+%{perl_vendorarch}/Nuxwdogclient.pm
+%{perl_vendorarch}/auto/Nuxwdogclient
+%{_mandir}/man3/Nuxwdogclient.3pm*
+
 %changelog
-* Tue Mar 6 2018 Dogtag PKI Team <pki-devel@redhat.com> 10.6.0-0
+* Tue Jul 24 2018 Dogtag PKI Team <pki-devel@redhat.com> 1.0.4
 - To list changes in <branch> since <tag>:
 $ git log --pretty=oneline --abbrev-commit --no-decorate <tag>..<branch>
