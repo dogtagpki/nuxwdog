@@ -111,7 +111,7 @@ watchdog_pwd_encrypt(char *pwdvalue, pwdenc_t *pwdcrypt)
 
     int len = strlen(pwdvalue);
     {
-        if ((pwdcrypt->ptr = (void *)malloc(len)) == NULL)
+        if ((pwdcrypt->ptr = (void *)malloc(len + 1)) == NULL)
             return;
     
         pwdcrypt->len = len;
@@ -247,7 +247,7 @@ int watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
              * Already have this password saved, so server must be
              * reprompting.  Replace the old value with the new value.
              */
-            char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX));
+            char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX) + 1);
             sprintf(keyname, "%s%s", KEY_PREFIX, pwdname);
             pwdp->pwdserial = add_key("user", keyname, (void *) pwdvalue,
                 strlen(pwdvalue), KEY_SPEC_PROCESS_KEYRING);
@@ -270,7 +270,7 @@ int watchdog_pwd_save(char *pwdname, int serial, char *pwdvalue)
     pwdp->pwdname = strdup(pwdname);
     pwdp->serial = serial;
 
-    char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX));
+    char *keyname = (char *) malloc(strlen(pwdname) + strlen(KEY_PREFIX) + 1);
     sprintf(keyname, "%s%s", KEY_PREFIX, pwdname);
     pwdp->pwdserial = add_key("user", keyname, (void *) pwdvalue,
         strlen(pwdvalue), KEY_SPEC_PROCESS_KEYRING);
