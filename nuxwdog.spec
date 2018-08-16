@@ -26,7 +26,7 @@ Requires:       nss
 Requires:       keyutils-libs
 Obsoletes:      nuxwdog-client
 
-Source0:        https://fedorahosted.org/released/nuxwdog/%{name}-%{version}.tar.gz
+Source0:        https://github.com/dogtagpki/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 # Note: there is an rpmlint warning about Nuxwdogclient.so being a private-shared-object-provide
 # This would ordinarily be fixed by calling the macro perl_default_filter, but 
