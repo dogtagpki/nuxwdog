@@ -1,5 +1,5 @@
 Name:           nuxwdog
-Version:        1.0.4
+Version:        1.0.5
 Release:        2%{?dist}
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
@@ -31,10 +31,6 @@ Source0:        https://github.com/dogtagpki/%{name}/archive/v%{version}/%{name}
 # Note: there is an rpmlint warning about Nuxwdogclient.so being a private-shared-object-provide
 # This would ordinarily be fixed by calling the macro perl_default_filter, but 
 # this disables rpms file coloring and makes the package fail multilib tests.
-
-%if 0%{?rhel}
-ExcludeArch: ppc ppc64 ppcle ppc64le s390 s390x
-%endif
 
 %description
 The nuxwdog package supplies the nuxwdog watchdog daemon, 
