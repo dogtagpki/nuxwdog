@@ -20,7 +20,7 @@ install:
       registry.fedoraproject.org/fedora:$FEDORA
   - docker exec container dnf install -y dnf-plugins-core make rpm-build
   - docker exec container dnf builddep -y --spec /root/nuxwdog/nuxwdog.spec
-  - docker exec container /root/nuxwdog/build_nuxwdog
+  - docker exec container /root/nuxwdog/build.sh --with-timestamp --with-commit-id rpm
 
 script:
-- docker exec container rpm -ivh /root/nuxwdog/release/dist/rpmpkg/RPMS/x86_64/*
+  - docker exec container rpm -ivh /root/build/nuxwdog/RPMS/*

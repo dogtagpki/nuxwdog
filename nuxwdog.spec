@@ -1,13 +1,19 @@
+################################################################################
 Name:           nuxwdog
-Version:        1.0.5
-Release:        2%{?dist}
+################################################################################
 Summary:        Watchdog server to start and stop processes, and prompt for passwords
 # The entire source code is LGPLv2 except for the perl module, which is GPL+ or Artistic
+URL:            http://www.dogtagpki.org/wiki/Nuxwdog
 License:        LGPLv2 and (GPL+ or Artistic)
-URL:            http://www.redhat.com/certificate_system
+
+Version:        1.0.5
+Release:        2%{?_timestamp}%{?_commit_id}%{?dist}
 
 # For epel5 and fc < 20 compatibility
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+
+# autosetup
+BuildRequires:    git
 
 BuildRequires:  ant
 BuildRequires:  java-devel >= 1:1.6.0
