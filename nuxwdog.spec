@@ -8,12 +8,13 @@ License:        LGPLv2 and (GPL+ or Artistic)
 
 Version:        1.0.5
 Release:        2%{?_timestamp}%{?_commit_id}%{?dist}
+# global         _phase -a1
 
 # For epel5 and fc < 20 compatibility
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 # autosetup
-BuildRequires:    git
+BuildRequires:  git
 
 BuildRequires:  ant
 BuildRequires:  java-devel >= 1:1.6.0
@@ -76,7 +77,7 @@ Requires:     %{name} = %{version}-%{release}
 The nuxwdog-client-perl package contains a perl interface to nuxwdog.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}%{?_phase} -p 1 -S git
 
 sed -i \
   -e 's,^NUXWDOGCLIENT_DOCUMENTATION=${NUXWDOGCLIENT_BUILD_PREFIX}/.*$,NUXWDOGCLIENT_DOCUMENTATION=${NUXWDOGCLIENT_BUILD_PREFIX}%{_pkgdocdir},' setup_package
