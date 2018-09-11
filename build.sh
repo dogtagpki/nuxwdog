@@ -122,7 +122,7 @@ generate_rpm_spec() {
 
     # hard-code patch
     if [ "$PATCH" != "" ] ; then
-        commands="${commands}; s/# Patch: tomcatjss-VERSION-RELEASE.patch/Patch: $PATCH/g"
+        commands="${commands}; s/# Patch: nuxwdog-VERSION-RELEASE.patch/Patch: $PATCH/g"
     fi
 
     sed "$commands" "$SPEC_TEMPLATE" > "$WORK_DIR/SPECS/$RPM_SPEC"
