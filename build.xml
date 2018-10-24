@@ -82,13 +82,12 @@
             description="--> generate jni header files">
         <echo message="${begin.build.jni.headers.log.message}"/>
         <mkdir dir="${build.dir}/include"/>
-        <exec executable="javah" failonerror="true">
+        <exec executable="javac" failonerror="true">
             <arg value="-classpath"/>
             <arg value="${build.classes}:${jss.jar}:${ldapjdk.jar}"/>
-            <arg value="-jni"/>
-            <arg value="-d"/>
+            <arg value="-h"/>
             <arg value="${build.dir}/include"/>
-            <arg value="com.redhat.${product.prefix}${product}.WatchdogClient"/>
+            <arg value="${src.dir}/com/redhat/${product.prefix}${product}/WatchdogClient.java"/>
         </exec>
         <echo message="${end.build.jni.headers.log.message}"/>
     </target>
