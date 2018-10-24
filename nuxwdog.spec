@@ -15,7 +15,11 @@ Release:        2%{?_timestamp}%{?_commit_id}%{?dist}
 
 # autosetup
 BuildRequires:  git
-
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  m4
+BuildRequires:  make
 BuildRequires:  ant
 BuildRequires:  java-devel >= 1:1.6.0
 BuildRequires:  jpackage-utils
@@ -88,6 +92,7 @@ ant \
     -Dproduct.prefix="" \
     -Dproduct="nuxwdog" \
     -Dversion="%{version}"
+autoreconf -f -i
 %configure  --disable-static  \
 %if 0%{?__isa_bits} == 64
     --enable-64bit \
