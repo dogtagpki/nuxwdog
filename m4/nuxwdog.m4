@@ -81,7 +81,7 @@ AC_ARG_WITH(jni-inc, [  --with-jni-inc=PATH        NUXWDOG jni.h header path],
 ],
 [case $host in
   *-*-linux*)
-    javac_exe=`/usr/sbin/alternatives --display javac | grep link | cut -c27-`
+    javac_exe=`/usr/sbin/alternatives --display javac | grep link | head -n 1 | cut -c27-`
     jni_path=`dirname $javac_exe`/../include
     jni_inc="-I$jni_path -I$jni_path/linux"
     if test -f "$jni_path"/jni.h
